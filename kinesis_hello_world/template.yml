@@ -1,69 +1,69 @@
 Description: "AWS Big Data Prototypes - Kinesis Hello World"
 Resources:
-    SourceKinesisStream: 
-        Type: AWS::Kinesis::Stream 
-        Properties: 
-            Name: BDP_KinesisHelloWorld_SourceKinesisStream
-            RetentionPeriodHours: 24
-            ShardCount: 1
-    DestinationS3Bucket:
-        Type: "AWS::S3::Bucket"
-        Properties:
-            BucketName: bdp-kinesishelloworld-destination         
-    DeliveryStream:
-        DependsOn:
-            - DeliveryPolicy
-        Type: AWS::KinesisFirehose::DeliveryStream
-        Properties:
-            ExtendedS3DestinationConfiguration:
-                BucketARN: !Join 
-                    - ''
-                    - - 'arn:aws:s3:::'
-                      - !Ref DestinationS3Bucket
-                BufferingHints:
-                    IntervalInSeconds: '60'
-                    SizeInMBs: '50'
-                CompressionFormat: UNCOMPRESSED
-                Prefix: firehose/
-                RoleARN: !GetAtt DeliveryRole.Arn
-    DeliveryRole:
-        Type: AWS::IAM::Role
-        Properties:
-            AssumeRolePolicyDocument:
-            Version: 2012-10-17
-            Statement:
-                -   Sid: ''
-                    Effect: Allow
-                    Principal:
-                        Service: firehose.amazonaws.com
-                    Action: 'sts:AssumeRole'
-                    Condition:
-                        StringEquals:
-                            'sts:ExternalId': !Ref 'AWS::AccountId'
-    DeliveryPolicy:
-        Type: AWS::IAM::Policy
-        Properties:
-            PolicyName: BDP_KinesisHelloWorld_FirehoseDeliveryPolicy
-            PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-                - Effect: Allow
-                  Action:
-                    - 's3:AbortMultipartUpload'
-                    - 's3:GetBucketLocation'
-                    - 's3:GetObject'
-                    - 's3:ListBucket'
-                    - 's3:ListBucketMultipartUploads'
-                    - 's3:PutObject'
-                  Resource:
-                    - !Join 
-                      - ''
-                      - - 'arn:aws:s3:::'
-                        - !Ref DestinationS3Bucket
-                    - !Join 
-                      - ''
-                      - - 'arn:aws:s3:::'
-                        - !Ref DestinationS3Bucket
-                        - '*'
-            Roles:
-                - !Ref DeliveryRole
+  SourceKinesisStream: 
+    Type: AWS::Kinesis::Stream 
+    Properties: 
+      Name: BDP_KinesisHelloWorld_SourceKinesisStream
+      RetentionPeriodHours: 24
+      ShardCount: 1
+  DestinationS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: bdp-kinesishelloworld-destination         
+  DeliveryStream:
+    DependsOn:
+      - DeliveryPolicy
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !Join 
+          - ''
+          - - 'arn:aws:s3:::'
+            - !Ref DestinationS3Bucket
+        BufferingHints:
+          IntervalInSeconds: '60'
+          SizeInMBs: '1'
+        CompressionFormat: UNCOMPRESSED
+        Prefix: firehose/
+        RoleARN: !GetAtt DeliveryRole.Arn
+  DeliveryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                'sts:ExternalId': !Ref 'AWS::AccountId'
+  DeliveryPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: BDP_KinesisHelloWorld_FirehoseDeliveryPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:AbortMultipartUpload'
+              - 's3:GetBucketLocation'
+              - 's3:GetObject'
+              - 's3:ListBucket'
+              - 's3:ListBucketMultipartUploads'
+              - 's3:PutObject'
+            Resource:
+              - !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref DestinationS3Bucket
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref DestinationS3Bucket
+                  - '*'
+      Roles:
+        - !Ref DeliveryRole
