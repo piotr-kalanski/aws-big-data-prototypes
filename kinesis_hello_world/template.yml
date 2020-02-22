@@ -15,6 +15,10 @@ Resources:
       - DeliveryPolicy
     Type: AWS::KinesisFirehose::DeliveryStream
     Properties:
+      DeliveryStreamType: "KinesisStreamAsSource"
+      KinesisStreamSourceConfiguration:
+        KinesisStreamARN: !Ref SourceKinesisStream
+        RoleARN: !Ref DeliveryRole
       ExtendedS3DestinationConfiguration:
         BucketARN: !Join 
           - ''
@@ -65,5 +69,11 @@ Resources:
                 - - 'arn:aws:s3:::'
                   - !Ref DestinationS3Bucket
                   - '*'
+          - Effect: Allow
+            Action:
+              - 'kinesis:DescribeStream'
+              - 'kinesis:GetShardIterator'
+              - 'kinesis:GetRecords'
+            Resource: !GetAtt SourceKinesisStream.Arn                 
       Roles:
         - !Ref DeliveryRole
