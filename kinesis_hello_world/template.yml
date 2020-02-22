@@ -18,7 +18,7 @@ Resources:
       DeliveryStreamType: "KinesisStreamAsSource"
       KinesisStreamSourceConfiguration:
         KinesisStreamARN: !Ref SourceKinesisStream
-        RoleARN: !Ref DeliveryRole
+        RoleARN: !GetAtt DeliveryRole.Arn
       ExtendedS3DestinationConfiguration:
         BucketARN: !Join 
           - ''
