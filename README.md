@@ -1,3 +1,3 @@
 # aws-big-data-prototypes
 
-Prorotypes for AWS Big Data services
+Prototypes for AWS Big Data services
